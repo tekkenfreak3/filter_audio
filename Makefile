@@ -19,6 +19,14 @@ ifeq ($(shell uname), Linux)
     TARGET = $(BASE_NAME).$(SHARED_EXT).$(VERSION)
     SHARED_LIB = $(BASE_NAME).$(SHARED_EXT).$(shell echo $(VERSION) | rev | cut -d "." -f 1 | rev)
     LDFLAGS += -Wl,-soname=$(SHARED_LIB)
+else ifeq ($(shell uname), OpenBSD)
+# OpenBSD ships with gcc 4.2.1 and will forever because of license issues. 4.2.1 chokes on the sse2 code
+# so egcc (current) gcc is needed. Anyone using other BSDs know if the case is the same there?
+    CC = egcc 
+    SHARED_EXT = so
+    TARGET = $(BASE_NAME).$(SHARED_EXT).$(VERSION)
+    SHARED_LIB = $(BASE_NAME).$(SHARED_EXT).$(shell echo $(VERSION) | rev | cut -d "." -f 1 | rev)
+    LDFLAGS += -Wl,-soname=$(SHARED_LIB)
 else ifeq ($(shell uname), Darwin)
     SHARED_EXT = dylib
     TARGET = $(BASE_NAME).$(VERSION).$(SHARED_EXT)
